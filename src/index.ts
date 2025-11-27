@@ -1,7 +1,10 @@
 // src/index.ts
 import { AskClient } from "./client";
 
-export function createAskClient(baseUrl: string, getToken: CallableFunction) {
+export function createAskClient(
+  baseUrl: string,
+  getToken?: () => Promise<string | null>
+) {
   return AskClient.create(baseUrl, getToken);
 }
 
