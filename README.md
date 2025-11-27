@@ -49,20 +49,10 @@ export const askClient = AskClient.create("https://api.example.com");
 //src/features/todos/api.ts
 import { ModelApiService } from "ask-core";
 
-class NotFoundError extends Error {}
-class UnauthorizedError extends Error {}
-
-const errorMap = {
-  401: UnauthorizedError,
-  404: NotFoundError,
-  500: (err) => new Error("Server exploded: " + err.message),
-};
-
 export class TodoApiService extends ModelApiService {
   constructor() {
-    super({ errorMap, requiresAuth:false });
+    super({ requiresAuth:false }); // will add the Bearer token 
   }
-
   async getById(todoId:string) {
     return this.get<Todo>({url: `/todos/${todoId}`})
   }
@@ -103,7 +93,7 @@ client.registerLazyServices({
 ```ts
 import { askClient } from '@/ask'
 const todos = await askClient.services.todos.getAll() // eager or lazy
-const todos = await askClient.services.project.list()
+const projects = await askClient.services.project.list()
 // etc...
 ```
 
@@ -156,7 +146,7 @@ export class WorkspaceApiService extends ModelApiService {
 
 ### ReactQuery Example
 ```ts
-// src/features/workspace/hooks/useWorkspaces.ts
+// src/features/todos/hooks.ts
 import { useQuery } from "@tanstack/react-query";
 import { askClient } from "@/ask";
 
