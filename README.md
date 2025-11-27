@@ -33,6 +33,29 @@ ASK is built around three core classes:
 - ModelApiService — GET + POST + PUT + PATCH + 
 
 
+```ts
+import { AskClient } from "ask-core";
+import { ModelApiService } from "@/services/ModelApiService";
+
+// Initialize singleton
+const client = AskClient.create("https://api.example.com");
+
+// Eager services
+client.registerServices({
+  models: ModelApiService,
+});
+
+// Lazy services
+client.registerLazyServices({
+  workspaces: () => import("@/services/WorkspaceService"),
+  members: () => import("@/services/WorkspaceMembersService"),
+});
+
+// Usage
+const modelsData = await client.services.models.getModels(); // eager
+const workspaceData = await client.services.workspaces.getAll(); // lazy
+
+```
 ## 🛡️ Error Mapping
 
 ASK lets you map HTTP status codes to:

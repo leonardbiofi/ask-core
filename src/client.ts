@@ -1,5 +1,14 @@
 // src/AskClient.ts
 import axios, { AxiosInstance } from "axios";
+import { lazy } from "./utils";
+
+type ServiceClassConstructor = new (client: AskClient) => any;
+
+export type EagerServiceDictionary = Record<string, ServiceClassConstructor>;
+export type LazyServiceDictionary = Record<
+  string,
+  () => Promise<{ default: ServiceClassConstructor }>
+>;
 
 interface AskClientOptions {
   getToken?: CallableFunction;
@@ -33,30 +42,17 @@ export class AskClient {
     return AskClient.instance;
   }
 
-  //   /** Register a service class */
-  //   registerService<T>(
-  //     name: string,
-  //     ServiceClass: new (client: AskClient, options?: BaseApiServiceOptions) => T,
-  //     options?: BaseApiServiceOptions
-  //   ) {
-  //     this.services[name] = new ServiceClass(this, options);
-  //   }
+  /** Batch registration of eager services */
+  registerServices(services: EagerServiceDictionary) {
+    for (const [name, ServiceClass] of Object.entries(services)) {
+      this.services[name] = new ServiceClass(this);
+    }
+  }
 
-  //   /** Register lazy services */
-  //   lazyRegisterServices(loaders: Record<string, () => Promise<any>>) {
-  //     Object.entries(loaders).forEach(([key, loader]) => {
-  //       Object.defineProperty(this.services, key, {
-  //         configurable: true,
-  //         enumerable: true,
-  //         get: () => {
-  //           return loader().then((mod) => {
-  //             const ServiceClass = mod.default;
-  //             const instance = new ServiceClass(this);
-  //             this.services[key] = instance;
-  //             return instance;
-  //           });
-  //         },
-  //       });
-  //     });
-  //   }
+  /** Batch registration of lazy services */
+  registerLazyServices(services: LazyServiceDictionary) {
+    for (const [name, lazyImporter] of Object.entries(services)) {
+      this.services[name] = lazy(lazyImporter, this);
+    }
+  }
 }
