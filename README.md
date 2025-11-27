@@ -35,20 +35,21 @@ ASK is built around three core classes:
 
 ```ts
 import { AskClient } from "ask-core";
-import { ModelApiService } from "@/services/ModelApiService";
 
 // Initialize singleton
 const client = AskClient.create("https://api.example.com");
 
 // Eager services
+import { WorkspaceApiService } from "@/features/workspace/api";
+
 client.registerServices({
-  models: ModelApiService,
+  models: WorkspaceApiService,
 });
 
-// Lazy services
+// Lazy services 🎉  Preferred ! 
 client.registerLazyServices({
-  workspaces: () => import("@/services/WorkspaceService"),
-  members: () => import("@/services/WorkspaceMembersService"),
+  workspaces: () => import("@/features/workspace/api"),
+  members: () => import("@/services/members/api"),
 });
 
 // Usage
@@ -64,7 +65,7 @@ ASK lets you map HTTP status codes to:
 - or custom factory functions
 
 ```ts
-import { ModelApiService } from "ask";
+import { ModelApiService } from "ask-core";
 
 class NotFoundError extends Error {}
 class UnauthorizedError extends Error {}
@@ -75,7 +76,7 @@ const errorMap = {
   500: (err) => new Error("Server exploded: " + err.message),
 };
 
-export class ProductService extends ModelApiService {
+export class WorkspaceApiService extends ModelApiService {
   constructor() {
     super({ errorMap });
   }
