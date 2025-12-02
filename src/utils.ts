@@ -1,12 +1,49 @@
-export function lazy<Mod extends { default: new (...args: any[]) => any }>(
+// export function lazy<Mod extends { default: new (...args: any[]) => any }>(
+//   importer: () => Promise<Mod>,
+//   ...constructorArgs: ConstructorParameters<Mod["default"]>
+// ) {
+//   type T = InstanceType<Mod["default"]>;
+//   let instance: Promise<T> | null = null;
+
+//   const load = () =>
+//     (instance ??= importer().then((m) => new m.default(...constructorArgs)));
+
+//   return new Proxy({} as T, {
+//     get(_, prop: keyof T) {
+//       return (...args: any[]) =>
+//         load().then((svc) => {
+//           const result = (svc as any)[prop](...args);
+//           return result instanceof Promise ? result : Promise.resolve(result);
+//         });
+//     },
+//   }) as AsyncifyMethods<T>;
+// }
+
+// // Wrap all methods to return Promise, avoid double-wrapping
+// export type AsyncifyMethods<T> = {
+//   [K in keyof T]: T[K] extends (...args: infer A) => Promise<infer R>
+//     ? (...args: A) => Promise<R>
+//     : T[K] extends (...args: infer A) => infer R
+//     ? (...args: A) => Promise<R>
+//     : T[K];
+// };
+
+// lazy.ts
+export function lazy<
+  Mod extends { default: Constructor<any> },
+  Wrapped extends Constructor<any>
+>(
   importer: () => Promise<Mod>,
-  ...constructorArgs: ConstructorParameters<Mod["default"]>
+  Wrapper: (Original: Constructor<any>) => Wrapped
 ) {
-  type T = InstanceType<Mod["default"]>;
+  type T = InstanceType<Wrapped>;
   let instance: Promise<T> | null = null;
 
   const load = () =>
-    (instance ??= importer().then((m) => new m.default(...constructorArgs)));
+    (instance ??= importer().then((m) => {
+      const WrappedClass = Wrapper(m.default);
+      return new WrappedClass();
+    }));
 
   return new Proxy({} as T, {
     get(_, prop: keyof T) {
@@ -19,7 +56,6 @@ export function lazy<Mod extends { default: new (...args: any[]) => any }>(
   }) as AsyncifyMethods<T>;
 }
 
-// Wrap all methods to return Promise, avoid double-wrapping
 export type AsyncifyMethods<T> = {
   [K in keyof T]: T[K] extends (...args: infer A) => Promise<infer R>
     ? (...args: A) => Promise<R>
@@ -27,3 +63,5 @@ export type AsyncifyMethods<T> = {
     ? (...args: A) => Promise<R>
     : T[K];
 };
+
+type Constructor<T> = new (...args: any[]) => T;

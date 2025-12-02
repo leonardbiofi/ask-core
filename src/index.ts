@@ -24,7 +24,7 @@ export function createAskClient(
     }
   };
 
-  return { client, ReadOnlyService, ModelService };
+  return { client, ReadOnlyService, ModelService } as const;
 }
 
 // export function getAskClient() {
