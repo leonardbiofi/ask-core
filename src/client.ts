@@ -16,7 +16,7 @@ interface AskClientOptions {
 export class AskClient<Services extends Record<string, any> = {}> {
   private static instance: AskClient | null = null;
   public readonly axios: AxiosInstance;
-  public services = {} as Services;
+  public services: Services = {} as Services;
   public getAccessToken: () => Promise<string | null> | void;
 
   constructor(baseURL: string, options: AskClientOptions) {
@@ -46,7 +46,7 @@ export class AskClient<Services extends Record<string, any> = {}> {
       [K in keyof T]: InstanceType<T[K]>;
     };
 
-    return this as unknown as AskClient<Services & NewServicesMap>;
+    return this as AskClient<Services & NewServicesMap>;
   }
 
   /** Lazy services */
@@ -63,6 +63,6 @@ export class AskClient<Services extends Record<string, any> = {}> {
         : never;
     };
 
-    return this as unknown as AskClient<Services & LazyServicesMap>;
+    return this as AskClient<Services & LazyServicesMap>;
   }
 }

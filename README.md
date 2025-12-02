@@ -69,20 +69,21 @@ export class TodoApiService extends ModelService {
 import { createAskClient } from "ask-core";
 
 // Initialize client
-const { client, ModelService, ReadOnlyService } = createAskClient(
+let { client, ModelService, ReadOnlyService } = createAskClient(
   "https://api.example.com"
 );
 
 // Eager services
 import TodoApiService from "@/features/todos/api";
 
-client.registerServices({
+// 👇 You MUST reuse the returned client for better typing support
+client = client.registerServices({
   todos: TodoApiService,
   // etc..
 });
 
 // Lazy services 🎉  Preferred !
-client.registerLazyServices({
+client = client.registerLazyServices({
   //   todos: () => import("@/features/todos/api"),
   //   projects: () => import("@/features/projects/api"),
   // etc..
