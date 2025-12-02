@@ -16,7 +16,7 @@ interface AskClientOptions {
 export class AskClient<Services extends Record<string, any> = {}> {
   private static instance: AskClient | null = null;
   public readonly axios: AxiosInstance;
-  public services: Record<string, any> = {};
+  public services = {} as Services;
   public getAccessToken: () => Promise<string | null> | void;
 
   constructor(baseURL: string, options: AskClientOptions) {
