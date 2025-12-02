@@ -4,19 +4,21 @@ import { ReadOnlyApiService } from "./ReadOnlyApiService";
 import { BaseApiServiceOptions } from "./BaseApiService";
 import { ModelApiService } from "./ModelApiService";
 
+type Constructor<T> = new (...args: any[]) => T;
+
 export function createAskClient(
   baseUrl: string,
   getToken?: () => Promise<string | null>
 ) {
   const client = new AskClient(baseUrl, { getToken });
 
-  const ReadOnlyService = class extends ReadOnlyApiService {
+  const ReadOnlyService: Constructor<ReadOnlyApiService> = class extends ReadOnlyApiService {
     constructor(options?: BaseApiServiceOptions) {
       super(client, options);
     }
   };
 
-  const ModelService = class extends ModelApiService {
+  const ModelService: Constructor<ModelApiService> = class extends ModelApiService {
     constructor(options?: BaseApiServiceOptions) {
       super(client, options);
     }
@@ -25,10 +27,10 @@ export function createAskClient(
   return { client, ReadOnlyService, ModelService };
 }
 
-export function getAskClient() {
-  return AskClient.get();
-}
+// export function getAskClient() {
+//   return AskClient.get();
+// }
 
-export * from "./BaseApiService";
-export * from "./ReadOnlyApiService";
-export * from "./ModelApiService";
+// export * from "./BaseApiService";
+// export * from "./ReadOnlyApiService";
+// export * from "./ModelApiService";
