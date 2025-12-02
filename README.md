@@ -36,10 +36,10 @@ ASK is built around three core classes:
 
 ```ts
 //src/ask.ts
-import { AskClient } from "ask-core";
+import { createAskClient } from "ask-core";
 
 // Initialize singleton
-export const askClient = AskClient.create("https://api.example.com");
+export default {client, ModelService, ReadOnlyService } = createAskClient("https://api.example.com");
 
 ```
 
@@ -66,10 +66,10 @@ export class TodoApiService extends ModelApiService {
 
 ```ts
 //src/ask.ts
-import { AskClient } from "ask-core";
+import { createAskClient } from "ask-core";
 
 // Initialize singleton
-export const askClient = AskClient.create("https://api.example.com");
+export const askClient = createAskClient("https://api.example.com");
 
 // Eager services
 import { TodoApiService } from "@/features/todos/api";

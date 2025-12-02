@@ -19,21 +19,12 @@ export class AskClient<Services extends Record<string, any> = {}> {
   public services: Record<string, any> = {};
   public getAccessToken: () => Promise<string | null> | void;
 
-  private constructor(baseURL: string, options: AskClientOptions) {
+  constructor(baseURL: string, options: AskClientOptions) {
     this.axios = axios.create({ baseURL });
     this.getAccessToken = options.getToken || (() => {});
   }
 
   /** Initialize singleton with baseURL */
-  public static create(
-    baseURL: string,
-    getToken?: () => Promise<string | null>
-  ) {
-    if (!AskClient.instance) {
-      AskClient.instance = new AskClient(baseURL, { getToken });
-    }
-    return AskClient.instance;
-  }
 
   /** Retrieve singleton */
   public static get() {

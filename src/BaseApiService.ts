@@ -19,9 +19,9 @@ export interface BaseApiServiceOptions {
 }
 
 export class BaseApiService {
-  protected readonly client: AskClient;
-  protected _requiresAuth: boolean;
-  private _errorMap: StatusErrorMap;
+  readonly client: AskClient;
+  _requiresAuth: boolean;
+  _errorMap: StatusErrorMap;
 
   constructor(client: AskClient, options?: BaseApiServiceOptions) {
     const { requiresAuth, errorMap } = options ?? {
@@ -41,7 +41,7 @@ export class BaseApiService {
   /**
    * Initialized the resquest interceptor
    */
-  private initializeRequestInterceptor() {
+  initializeRequestInterceptor() {
     const configCallback = async function (
       this: BaseApiService,
       config: InternalAxiosRequestConfig
@@ -70,7 +70,7 @@ export class BaseApiService {
     );
   }
 
-  protected get axios() {
+  get axios() {
     return this.client.axios;
   }
 
