@@ -116,9 +116,6 @@ Individual requests can override via config:
 this.get({ url: "/some-public-endpoint", config: { requiresAuth: false } });
 ```
 
-
-
-
 Here is an full example
 
 ```ts
