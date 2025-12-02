@@ -17,7 +17,9 @@ export interface BaseApiServiceOptions {
   requiresAuth: boolean;
   errorMap: StatusErrorMap;
 }
-
+export interface ApiRequestConfig extends AxiosRequestConfig {
+  requiresAuth?: boolean; // request-level override
+}
 export class BaseApiService {
   readonly client: AskClient;
   _requiresAuth: boolean;
@@ -44,13 +46,15 @@ export class BaseApiService {
   initializeRequestInterceptor() {
     const configCallback = async function (
       this: BaseApiService,
-      config: InternalAxiosRequestConfig
+      config: InternalAxiosRequestConfig & ApiRequestConfig
     ) {
-      if (this._requiresAuth) {
-        // Retrieve token from sessionStorage
-        const accessToken = await this.client.getAccessToken();
-        if (accessToken && config.headers) {
-          config.headers["Authorization"] = `Bearer ${accessToken}`;
+      const requiresAuth = config.requiresAuth ?? this._requiresAuth;
+
+      if (requiresAuth) {
+        const token = await this.client.getAccessToken();
+        if (token) {
+          config.headers = config.headers || {};
+          config.headers["Authorization"] = `Bearer ${token}`;
         }
       }
 

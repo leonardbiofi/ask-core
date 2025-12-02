@@ -47,9 +47,9 @@ export default {client, ModelService, ReadOnlyService } = createAskClient("https
 
 ```ts
 //src/features/todos/api.ts
-import { ModelApiService } from "ask-core";
+import { ModelService } from '@/ask'
 
-export class TodoApiService extends ModelApiService {
+export class TodoApiService extends ModelService {
   constructor() {
     super({ requiresAuth:false }); // will add the Bearer token 
   }
@@ -68,32 +68,36 @@ export class TodoApiService extends ModelApiService {
 //src/ask.ts
 import { createAskClient } from "ask-core";
 
-// Initialize singleton
-export const askClient = createAskClient("https://api.example.com");
+// Initialize client
+const { client, ModelService, ReadOnlyService } = createAskClient(
+  "https://api.example.com"
+);
 
 // Eager services
-import { TodoApiService } from "@/features/todos/api";
+import TodoApiService from "@/features/todos/api";
 
 client.registerServices({
   todos: TodoApiService,
   // etc..
 });
 
-// Lazy services 🎉  Preferred ! 
+// Lazy services 🎉  Preferred !
 client.registerLazyServices({
-  todos: () => import("@/features/todos/api"),
-  projects: () => import("@/features/projects/api"),
+  //   todos: () => import("@/features/todos/api"),
+  //   projects: () => import("@/features/projects/api"),
   // etc..
 });
+
+export { client, ModelService, ReadOnlyService };
 
 ```
 
 ### 4. Use the service layer
 
 ```ts
-import { askClient } from '@/ask'
-const todos = await askClient.services.todos.getAll() // eager or lazy
-const projects = await askClient.services.project.list()
+import { client } from '@/ask'
+const todos = await client.services.todos.getAll() // eager or lazy
+const projects = await client.services.project.list()
 // etc...
 ```
 
@@ -112,9 +116,25 @@ Individual requests can override via config:
 this.get({ url: "/some-public-endpoint", config: { requiresAuth: false } });
 ```
 
-Token injection:
-You never have to manually attach Authorization headers — the interceptor automatically handles it based on requiresAuth.
 
+
+
+Here is an full example
+
+```ts
+class TodoApiService extends ModelApiClass {
+  constructor() {
+    super({ requiresAuth: true }); // all requests require auth by default
+  }
+  async getTodos() {
+    // Request override
+   return this.get<Todo[]>({ url: "/public-endpoint", config: { requiresAuth: false } });
+  }
+}
+```
+> [!NOTE]
+> You never have to manually attach Authorization headers — the interceptor automatically handles it based on requiresAuth.
+> 
 ## 🛡️ Error Mapping
 
 ASK lets you map HTTP status codes to:
@@ -148,7 +168,7 @@ export class WorkspaceApiService extends ModelApiService {
 ```ts
 // src/features/todos/hooks.ts
 import { useQuery } from "@tanstack/react-query";
-import { askClient } from "@/ask";
+import { client } from "@/ask";
 
 
 export const useGetAllTodos = () => {
