@@ -75,6 +75,7 @@ export class TodoApiService extends ModelService {
 //src/ask.ts
 import { createAskClient } from "ask-core";
 
+// Any method to get the access token
 const getToken = async () => sessionStorage.getItem('API_TOKEN')!
 
 // Initialize client
