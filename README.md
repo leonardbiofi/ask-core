@@ -75,9 +75,12 @@ export class TodoApiService extends ModelService {
 //src/ask.ts
 import { createAskClient } from "ask-core";
 
+const getToken = async () => sessionStorage.getItem('API_TOKEN')!
+
 // Initialize client
 const { client: baseclient, ModelService, ReadOnlyService } = createAskClient(
-  "https://api.example.com"
+  "https://api.example.com",
+  { getToken, authHeader: 'Bearer'}
 );
 
 // Eager services
