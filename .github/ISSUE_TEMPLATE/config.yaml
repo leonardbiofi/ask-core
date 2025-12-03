@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+default: bug_report.md
+contact_links:
+  - https://github.com/leonardbiofi/ask-core/issues
+template:
+  - bug_report.md
+  - feature_request.md
+  - general_issue.md
