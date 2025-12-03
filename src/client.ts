@@ -16,18 +16,23 @@ export type LazyServiceDictionary = Record<
   () => Promise<{ default: Constructor<any> }>
 >;
 
+type AuthHeader = "Bearer" | "Basic" | "Token";
 interface AskClientOptions {
+  authHeader?: AuthHeader;
   getToken?: () => Promise<string | null>;
 }
 export class AskClient<Services extends Record<string, any> = {}> {
   private static instance: AskClient | null = null;
   public readonly axios: AxiosInstance;
   public services: Services = {} as Services;
-  public getAccessToken: () => Promise<string | null> | void;
+
+  getAccessToken: () => Promise<string | null> | void;
+  authHeader: AuthHeader;
 
   constructor(baseURL: string, options: AskClientOptions) {
     this.axios = axios.create({ baseURL });
     this.getAccessToken = options.getToken || (() => {});
+    this.authHeader = options.authHeader || "Bearer";
   }
 
   /** Initialize singleton with baseURL */

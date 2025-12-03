@@ -52,9 +52,11 @@ export class BaseApiService {
 
       if (requiresAuth) {
         const token = await this.client.getAccessToken();
+        const header = this.client.authHeader;
+
         if (token) {
           config.headers = config.headers || {};
-          config.headers["Authorization"] = `Bearer ${token}`;
+          config.headers["Authorization"] = `${header} ${token}`;
         }
       }
 
@@ -78,9 +80,7 @@ export class BaseApiService {
     return this.client.axios;
   }
 
-  handleErrors(err: unknown) {
-    // console.log("Error caught in the api handler: ", err);
-
+  handleErrors(err: AxiosError | Error) {
     if (err instanceof AxiosError) {
       throw mapAxiosError(err, this._errorMap);
     }

@@ -34,12 +34,19 @@ ASK is built around three core classes:
 
 ## 1. Initialize the AskClient
 
+`createAskClient` helps you to create your client but also two utility classes that will use to define your services.
+
+- `ModelService` utility class exposes `get`, `post` ,`delete`, `patch`, `put` for you to define your services
+- `ReadOnlyService` is the same class except that it only exposes the `get` method.
+
+See below how to use these utility class to use create a new `ApiService`
+
 ```ts
 //src/ask.ts
 import { createAskClient } from "ask-core";
 
-// Initialize singleton
-export default {client, ModelService, ReadOnlyService } = createAskClient("https://api.example.com");
+// Initialize client and get two constructors for your service
+const {client, ModelService, ReadOnlyService } = createAskClient("https://api.example.com");
 
 ```
 
@@ -142,7 +149,7 @@ ASK lets you map HTTP status codes to:
 - or custom factory functions
 
 ```ts
-import { ModelApiService } from "ask-core";
+import { ModelService } from "@/ask";
 
 class NotFoundError extends Error {}
 class UnauthorizedError extends Error {}
@@ -153,7 +160,7 @@ const errorMap = {
   500: (err) => new Error("Server exploded: " + err.message),
 };
 
-export class WorkspaceApiService extends ModelApiService {
+export class WorkspaceApiService extends ModelService {
   constructor() {
     super({ errorMap });
   }
@@ -161,7 +168,7 @@ export class WorkspaceApiService extends ModelApiService {
 
 ```
 
-## Use it in your favourite library
+## Use it with your favourite library
 
 ### ReactQuery Example
 ```ts
