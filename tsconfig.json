@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    // "module": "ESNext",
+    "module": "esnext", // ✅ Node ESM compatible
+    "moduleResolution": "bundler", // ✅ Node-style import resolution
+    // "moduleResolution": "Bundler",
     "outDir": "dist",
     "rootDir": "src",
 

@@ -5,13 +5,20 @@
   "files": [
     "dist"
   ],
-  "main": "dist/index.js",
+  "main": "dist/ask-core.cjs.js",
+  "module": "dist/ask-core.es.js",
   "types": "dist/index.d.ts",
-  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ask-core.es.js",
+      "require": "./dist/ask-core.cjs.js"
+    }
+  },
   "scripts": {
-    "build": "tsc",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build"
+    "build:js": "vite build",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build": "npm run clean && npm run build:js && npm run build:types"
   },
   "keywords": [
     "axios",
@@ -32,6 +39,8 @@
     "axios": "^1.13.2"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
