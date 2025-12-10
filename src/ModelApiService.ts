@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { ApiServiceParam } from "./BaseApiService";
 import { ReadOnlyApiService } from "./ReadOnlyApiService";
 
@@ -6,7 +7,7 @@ export class ModelApiService extends ReadOnlyApiService {
     try {
       const response = await this.axios.post(url, data, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
@@ -15,7 +16,7 @@ export class ModelApiService extends ReadOnlyApiService {
     try {
       const response = await this.axios.put(url, data, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
@@ -24,7 +25,7 @@ export class ModelApiService extends ReadOnlyApiService {
     try {
       const response = await this.axios.patch(url, data, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
@@ -33,7 +34,7 @@ export class ModelApiService extends ReadOnlyApiService {
     try {
       const response = await this.axios.delete(url, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
