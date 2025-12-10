@@ -5,7 +5,7 @@ export class ReadOnlyApiService extends BaseApiService {
     try {
       const response = await this.axios.get(url, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
@@ -14,7 +14,7 @@ export class ReadOnlyApiService extends BaseApiService {
     try {
       const response = await this.axios.get(url, config);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       return this.handleErrors(err);
     }
   }
