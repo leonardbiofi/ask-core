@@ -17,9 +17,9 @@ export type LazyServiceDictionary = Record<
 >;
 
 type AuthHeader = "Bearer" | "Basic" | "Token";
-interface AskClientOptions {
+export interface AskClientOptions {
   authHeader?: AuthHeader;
-  getToken?: () => Promise<string | null>;
+  getToken?: () => Promise<string | null | undefined>;
 }
 export class AskClient<Services extends Record<string, any> = {}> {
   private static instance: AskClient | null = null;
