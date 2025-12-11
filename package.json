@@ -1,6 +1,6 @@
 {
   "name": "ask-core",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Axios Service Kit",
   "files": [
     "dist"
@@ -22,9 +22,10 @@
     "build": "npm run clean && npm run build:js && npm run build:types"
   },
   "keywords": [
+    "request",
+    "http",
+    "react",
     "axios",
-    "service",
-    "layer",
     "api-client",
     "typescript",
     "library"

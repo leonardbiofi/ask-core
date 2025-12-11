@@ -77,6 +77,19 @@ export class AskClient<Services extends Record<string, any> = {}> {
   //   return this as AskClient<Services & LazyServicesMap>;
   // }
 
+  /** Add a single eager service */
+  addService<Key extends string, Ctor extends ServiceClassConstructor>(
+    name: Key,
+    ServiceClass: Ctor
+  ) {
+    const instance = new ServiceClass(this);
+    (this.services as any)[name] = instance;
+
+    type Added = { [K in Key]: InstanceType<Ctor> };
+
+    return this as AskClient<Services & Added>;
+  }
+
   /** Eager services */
   registerServices<T extends EagerServiceDictionary>(services: T) {
     const mapped: any = {};

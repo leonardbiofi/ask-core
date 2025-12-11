@@ -5,6 +5,9 @@ Designed to simplify API client creation with auth, error mapping, and clean ser
 
 <p align="center"> <img src="https://img.shields.io/badge/axios-service%20kit-4B8BF5?style=for-the-badge" /> <img src="https://img.shields.io/npm/v/ask-core.svg?style=for-the-badge" /> <img src="https://img.shields.io/bundlephobia/minzip/ask-core?style=for-the-badge" /> <img src="https://img.shields.io/npm/l/ask-core?style=for-the-badge" /> </p>
 
+> [!WARNING]
+> Ask core is not yet stable as it is brand new. I am already using it in many project so I intend to keep it maintained on the long term.
+
 # 🚀 Features
 
 - Typed service classes for GET/POST/PUT/PATCH/DELETE
@@ -52,9 +55,11 @@ const {client, ModelService, ReadOnlyService } = createAskClient("https://api.ex
 
 ## 2. Write a Service
 
+After writing your service you must register it or add it to the client for a general usage
+
 ```ts
 //src/features/todos/api.ts
-import { ModelService } from '@/ask'
+import { ModelService, client} from '@/ask'
 
 export class TodoApiService extends ModelService {
   constructor() {
@@ -67,9 +72,19 @@ export class TodoApiService extends ModelService {
     return this.get({url: `/todos/`})
   }
 }
+
+//OPTIONAL: Register your service eagerly (bundle size might increase)
+client.addService('todos', TodoApiService)
+
+// Or Alternatively you can register your service as lazy import (preferred)
+
 ```
 
 ## 3. Register your service
+
+Registering your service is important so the `askClient` is aware of all services registered. You can do this either:
+  - eagerly in each feature by calling `addService` method. 
+  - Lazy imports by calling the registerLazyServices
 
 ```ts
 //src/ask.ts
@@ -84,26 +99,23 @@ const { client: baseclient, ModelService, ReadOnlyService } = createAskClient(
   { getToken, authHeader: 'Bearer'}
 );
 
-// Eager services
-import TodoApiService from "@/features/todos/api";
 
 // 👇 You MUST reuse the returned client for better typing support
-const client = baseclient.registerServices({
-  todos: TodoApiService,
-  // etc..
-}).registerLazyServices({
+// LazyService to have lazy imports and to avoid circular imports
+const client = baseClient.registerLazyServices({
   // Lazy services 🎉  Preferred !
-  //   todos: () => import("@/features/todos/api"),
+    todos: () => import("@/features/todos/api"),
   //   projects: () => import("@/features/projects/api"),
   // etc..
 });
 
-
-
-
 export { client, ModelService, ReadOnlyService };
-
 ```
+
+> [!WARNING]
+> if you would like to register all your services in an index file, you can do similarly with `client.registerServices` but in a separate file to avoid circular imports
+
+
 
 ### 4. Use the service layer
 

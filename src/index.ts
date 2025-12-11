@@ -23,11 +23,3 @@ export function createAskClient(baseUrl: string, options: AskClientOptions) {
 
   return { client, ReadOnlyService, ModelService } as const;
 }
-
-// export function getAskClient() {
-//   return AskClient.get();
-// }
-
-// export * from "./BaseApiService";
-// export * from "./ReadOnlyApiService";
-// export * from "./ModelApiService";
