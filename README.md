@@ -103,8 +103,8 @@ const { client: baseclient, ModelService, ReadOnlyService } = createAskClient(
 // LazyService to have lazy imports and to avoid circular imports
 const client = baseClient.registerLazyServices({
   // Lazy services 🎉  Preferred !
-    todos: () => import("@/features/todos/api"),
-  //   projects: () => import("@/features/projects/api"),
+    // todos: () => import("@/features/todos/api"),
+    projects: () => import("@/features/projects/api"),
   // etc..
 });
 
@@ -118,10 +118,14 @@ export { client, ModelService, ReadOnlyService };
 
 ### 4. Use the service layer
 
+Once registered the services are available on the client. You can simply find all your registered services with their associated keyword.
+
+
+
 ```ts
 import { client } from '@/ask'
 const todos = await client.services.todos.getAll() // eager or lazy
-const projects = await client.services.project.list()
+const projects = await client.services.projects.list()
 // etc...
 ```
 
