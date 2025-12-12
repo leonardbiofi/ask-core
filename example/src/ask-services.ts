@@ -11,7 +11,7 @@ const client = baseClient
   // LazyService to have lazy imports and to avoid circular imports
   .registerLazyServices({
     // Lazy services 🎉  Preferred !
-    // todos: () => import("@/features/dogs/api"),
+    facts: () => import("./features/facts/api"),
     //   projects: () => import("@/features/projects/api"),
     // etc..
   });

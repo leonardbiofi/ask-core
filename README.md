@@ -71,7 +71,7 @@ import { ModelService} from '@/ask'
 
 export default class TodoApiService extends ModelService {
   constructor() {
-    super({ requiresAuth:false }); // will add the Bearer token 
+    super({ requiresAuth:false }); // will not add the Bearer token 
   }
   async getById(todoId:string) {
     return this.get<Todo>({url: `/todos/${todoId}`})
@@ -80,8 +80,6 @@ export default class TodoApiService extends ModelService {
     return this.get({url: `/todos/`})
   }
 }
-
-
 ```
 
 ## 3. Register your service

@@ -8,7 +8,7 @@ export type Breed = {
 
 export class BreedsApiService extends ModelService {
   constructor() {
-    super({ requiresAuth: false }); // will add the Bearer token
+    super({ requiresAuth: false }); // will not add the Bearer token
   }
   async getAll() {
     return this.get<Breed[]>({ url: `/breeds` });
@@ -17,7 +17,3 @@ export class BreedsApiService extends ModelService {
     return this.get<Breed>({ url: `/breeds/${breedId}` });
   }
 }
-
-//OPTIONAL: Register your service eagerly (bundle size might increase)
-
-// Or Alternatively you can register your service as lazy import (preferred)
