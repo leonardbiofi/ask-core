@@ -1,6 +1,6 @@
 {
   "name": "ask-core",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Axios Service Kit",
   "files": [
     "dist"

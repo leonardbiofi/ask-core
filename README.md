@@ -12,7 +12,7 @@ Designed to simplify API client creation with auth, error mapping, and clean ser
 - Typed service classes for GET/POST/PUT/PATCH/DELETE
 - Built-in request interceptor with optional auth token injection
 - Extensible error mapping (map HTTP status → custom errors)
-- Simple, predictable API (ReadOnlyApiService, ModelApiService)
+- Simple, predictable API (ReadOnlyService, ModelService)
 - Reusable Axios instance per service
 - Minimal boilerplate for API layers
   
@@ -32,7 +32,9 @@ ASK is built around three core classes:
 
 - BaseApiService — Axios wrapper with auth + error mapping
 - ReadOnlyApiService — GET-only service
-- ModelApiService — GET + POST + PUT + PATCH + 
+- ModelApiService — GET + POST + PUT + PATCH + DELETE
+
+**[FULL CODE EXAMPLE AVAILABLE HERE](https://github.com/leonardbiofi/ask-core/tree/main/example)**
 
 ## 1. Initialize the AskClient
 
@@ -47,20 +49,27 @@ See below how to use these utility class to use create a new `ApiService`
 //src/ask.ts
 import { createAskClient } from "ask-core";
 
-// Initialize client and get two constructors for your service
-const {client, ModelService, ReadOnlyService } = createAskClient("https://api.example.com");
+// Any method to get the access token
+const getToken = async () => sessionStorage.getItem('API_TOKEN')!
 
+// Initialize client
+const { client: baseClient, ModelService, ReadOnlyService } = createAskClient(
+  "https://api.example.com",
+  { getToken, authHeader: 'Bearer'}
+);
+
+export { baseClient, ModelService, ReadOnlyService };
 ```
 
 ## 2. Write a Service
 
-After writing your service you must register it or add it to the client for a general usage
+Writing your service can be done anywhere in your directory tree. I usually like to keep it next to my **features**
 
 ```ts
 //src/features/todos/api.ts
-import { ModelService, client} from '@/ask'
+import { ModelService} from '@/ask'
 
-export class TodoApiService extends ModelService {
+export default class TodoApiService extends ModelService {
   constructor() {
     super({ requiresAuth:false }); // will add the Bearer token 
   }
@@ -72,63 +81,57 @@ export class TodoApiService extends ModelService {
   }
 }
 
-//OPTIONAL: Register your service eagerly (bundle size might increase)
-client.addService('todos', TodoApiService)
-
-// Or Alternatively you can register your service as lazy import (preferred)
 
 ```
 
 ## 3. Register your service
 
-Registering your service is important so the `askClient` is aware of all services registered. You can do this either:
-  - eagerly in each feature by calling `addService` method. 
+Create a new file `ask-services.ts` next to your `ask.ts` file. In this file we will register all your services in a one place.
+
+Registering your service is important so the api is aware of all services registered. You can do this:
+  - Eager imports by calling the registerServices
   - Lazy imports by calling the registerLazyServices
 
 ```ts
-//src/ask.ts
-import { createAskClient } from "ask-core";
-
-// Any method to get the access token
-const getToken = async () => sessionStorage.getItem('API_TOKEN')!
-
-// Initialize client
-const { client: baseclient, ModelService, ReadOnlyService } = createAskClient(
-  "https://api.example.com",
-  { getToken, authHeader: 'Bearer'}
-);
-
+//src/ask-services.ts
+import { baseClient } from "./ask";
+import TodosApiService from "./features/todos/api";
 
 // 👇 You MUST reuse the returned client for better typing support
-// LazyService to have lazy imports and to avoid circular imports
-const client = baseClient.registerLazyServices({
-  // Lazy services 🎉  Preferred !
-    // todos: () => import("@/features/todos/api"),
+const client = baseClient
+  // Eager services (bundle size might increase if you have big services)
+  .registerServices({
+    todos: TodosApiService,
+  })
+  // LazyService to have lazy imports and to avoid circular imports
+  .registerLazyServices({
+    // Lazy services 🎉  Preferred !
+    // todos: () => import("@/features/dogs/api"),
     projects: () => import("@/features/projects/api"),
-  // etc..
-});
+    // etc..
+  });
 
-export { client, ModelService, ReadOnlyService };
+// Rename your export to have to only use 'api' afterwards
+export const { services: api } = client;
+
 ```
 
-> [!WARNING]
-> if you would like to register all your services in an index file, you can do similarly with `client.registerServices` but in a separate file to avoid circular imports
-
+Now all your services are registered in one place. It is very easy to manage
 
 
 ### 4. Use the service layer
 
 Once registered the services are available on the client. You can simply find all your registered services with their associated keyword.
 
-
-
 ```ts
-import { client } from '@/ask'
-const todos = await client.services.todos.getAll() // eager or lazy
-const projects = await client.services.projects.list()
+import { api } from '@/ask-services'
+const todos = await api.todos.getAll()  // eager
+const projects = await api.projects.list() // lazy
 // etc...
+//
 ```
 
+**🎉 Congratulation, you created your first API Service layer**
 
 ## Authentication
 
@@ -193,16 +196,16 @@ export class WorkspaceApiService extends ModelService {
 ```ts
 // src/features/todos/hooks.ts
 import { useQuery } from "@tanstack/react-query";
-import { client } from "@/ask";
+import { api } from "@/ask-services";
 
 
 export const useGetAllTodos = () => {
-  const query = useQuery({queryKey: ["todos"], queryFn: () => askClient.services.todos.getAll()});
+  const query = useQuery({queryKey: ["todos"], queryFn: () => api.todos.getAll()});
   return query
 };
 
 export const useGetTodobyId = (todoId:string) => {
-  const query = useQuery({queryKey: ["todos", todoId], queryFn: () => askClient.services.todos.getById(todoId)});
+  const query = useQuery({queryKey: ["todos", todoId], queryFn: () => api.todos.getById(todoId)});
   return query
 };
 

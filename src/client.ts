@@ -24,7 +24,7 @@ export interface AskClientOptions {
 export class AskClient<Services extends Record<string, any> = {}> {
   private static instance: AskClient | null = null;
   public readonly axios: AxiosInstance;
-  public services: Services = {} as Services;
+  public services!: Services;
 
   getAccessToken: () => Promise<string | null> | void;
   authHeader: AuthHeader;
@@ -33,6 +33,7 @@ export class AskClient<Services extends Record<string, any> = {}> {
     this.axios = axios.create({ baseURL });
     this.getAccessToken = options.getToken || (() => {});
     this.authHeader = options.authHeader || "Bearer";
+    this.services = {} as Services; // initialize with correct generic
   }
 
   /** Initialize singleton with baseURL */
@@ -77,19 +78,6 @@ export class AskClient<Services extends Record<string, any> = {}> {
   //   return this as AskClient<Services & LazyServicesMap>;
   // }
 
-  /** Add a single eager service */
-  addService<Key extends string, Ctor extends ServiceClassConstructor>(
-    name: Key,
-    ServiceClass: Ctor
-  ) {
-    const instance = new ServiceClass(this);
-    (this.services as any)[name] = instance;
-
-    type Added = { [K in Key]: InstanceType<Ctor> };
-
-    return this as AskClient<Services & Added>;
-  }
-
   /** Eager services */
   registerServices<T extends EagerServiceDictionary>(services: T) {
     const mapped: any = {};
@@ -104,6 +92,7 @@ export class AskClient<Services extends Record<string, any> = {}> {
       mapped[key] = new ServiceWrapper();
     }
 
+    // this.services = { ...this.services, ...mapped };
     Object.assign(this.services, mapped);
 
     type Added = { [K in keyof T]: InstanceType<T[K]> };
