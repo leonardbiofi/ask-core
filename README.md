@@ -5,7 +5,7 @@ Designed to simplify API client creation with auth, error mapping, and clean ser
 
 <p align="center"> <img src="https://img.shields.io/badge/axios-service%20kit-4B8BF5?style=for-the-badge" /> <img src="https://img.shields.io/npm/v/ask-core.svg?style=for-the-badge" /> <img src="https://img.shields.io/bundlephobia/minzip/ask-core?style=for-the-badge" /> <img src="https://img.shields.io/npm/l/ask-core?style=for-the-badge" /> </p>
 
-> :warning **Ask core is not yet stable as it is brand new. I am already using it in many project so I intend to keep it maintained on the long term.**
+> :warning **Ask core is now quite stable but it is brand new. I am already using it in many project so I intend to keep it maintained on the long term.**
 
 # 🚀 Features
 
